@@ -4,6 +4,9 @@ int motorLeftPin2 = 3;
 int motorRightPin1 = 4;
 int motorRightPin2 = 5;
 
+int motorLeft[] = {motorLeftPin1, motorLeftPin2};
+int motorRight[] = {motorRightPin1, motorRightPin2};
+
 int motorSpeedPin = 6;
 
 
@@ -23,14 +26,14 @@ void loop() {
   //Controlling speed (0 = off and 255 = max speed):
   analogWrite(motorSpeedPin, 100); //ENA pin
   //Controlling spin direction of motors:
-  setDir(motorLeftPin1, motorLeftPin2, 2);
+  setDir(motorLeft, 2);
 
-  setDir(motorRightPin1, motorRightPin2, 2);
+  setDir(motorRight, 2);
   delay(1000);
 
-  setDir(motorLeftPin1, motorLeftPin2, 1);
+  setDir(motorLeft, 1);
 
-  setDir(motorRightPin1, motorRightPin2, 1);
+  setDir(motorRight, 1);
   delay(1000);
 }
 
@@ -46,6 +49,10 @@ void setDir(int pin1, int pin2, int dir){
     digitalWrite(pin1, HIGH);
     digitalWrite(pin2, LOW);
   }
+}
+
+void setDir(int pins[], int dir){
+  setDir(pins[0], pins[1], dir);
 }
 
 void turn(int deg){
