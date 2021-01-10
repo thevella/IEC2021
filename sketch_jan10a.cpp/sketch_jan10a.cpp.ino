@@ -7,6 +7,9 @@ int motorRightPin2 = 5;
 int motorLeft[] = {motorLeftPin1, motorLeftPin2};
 int motorRight[] = {motorRightPin1, motorRightPin2};
 
+define joyX A0
+define joyY A1
+
 int motorSpeedPin = 6;
 
 
@@ -18,14 +21,23 @@ void setup() {
   pinMode(motorRightPin2, OUTPUT);
 
   pinMode(motorSpeedPin, OUTPUT);
+
+  pinMode(joyX, INPUT);
+  pinMode(joyY, INPUT);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:   
 
+  //read joystick input
+  xVal = analogRead(joyX);
+  yVal = analogRead(joyY);
+  
   //Controlling speed (0 = off and 255 = max speed):
   analogWrite(motorSpeedPin, 100); //ENA pin
+  
   //Controlling spin direction of motors:
+  while(xVal != 0 || yVal != 0){
   setDir(motorLeft, 2);
 
   setDir(motorRight, 2);
@@ -35,6 +47,7 @@ void loop() {
 
   setDir(motorRight, 1);
   delay(1000);
+  }
 }
 
 void setDir(int pin1, int pin2, int dir){
