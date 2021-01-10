@@ -1,3 +1,7 @@
+#define joyX A0
+#define joyY A1
+const int joySw = 12;
+
 const int motorLeftPin1 = 2;
 const int motorLeftPin2 = 3;
 
@@ -13,12 +17,14 @@ const int buttonPins[] = {8,9,10,11};
 
 int buttonStates[] = {0,0,0,0};
 
+const int deadZone = 40;
+int minSpeed = 100;
 
-#define joyX A0
-#define joyY A1
-int joySw = 7;
+bool isDriving = false;
 
-int motorSpeedPin = 6;
+float xVal = 0;
+float yVal = 0;
+float vel = 0;
 
 
 
@@ -35,18 +41,14 @@ void setup() {
     pinMode(buttonPins[i], INPUT); 
   }
 
-
   pinMode(joyX, INPUT);
   pinMode(joyY, INPUT);
   pinMode(joySw, INPUT);
-
 
   Serial.begin(9600);
 }
 
 void loop() {
-  //Controlling speed (0 = off and 255 = max speed):
-  analogWrite(motorSpeedPin, 75); //ENA pin
 
   for(int i = 0; i < 4; ++i){
     buttonStates[i] = digitalRead(buttonPins[i]);
@@ -55,68 +57,46 @@ void loop() {
     }
   }
   
-  //Controlling spin direction of motors:
-  /*
-  setDir(motorLeft, 2);
-
-  setDir(motorRight, 2);
-  delay(10);
-
-  setDir(motorLeft, 1);
-
-  setDir(motorRight, 1);
-  delay(1000);
-  */
-
-  int isDriving;
-  //read joystick input
-  float xVal = analogRead(joyX);
-  float yVal = analogRead(joyY);
-  float vel;
+  setDir(motorLeft,0);
+  setDir(motorRight,0);
   
 
-  //check if controller is in deadzone
-  if ((xVal > 512-20 && xVal < 512+20) && (yVal > 512-20 && yVal < 512+20)){
-    isDriving = 0;
-  }
-  else{
-    isDriving = 1;
-  }
+  readInput();
   
   //Controlling spin direction of motors:
-  while(isDriving == 1){
+  while(isDriving){
     //steering left
-    if(xVal < 512-20){
+    if(xVal < 512-deadZone){
+      vel = abs(xVal-512)*0.02+minSpeed;
       setDir(motorLeft,2);
       setDir(motorRight,1);
     }
     //steering right
-    if(xVal > 512+20){
+    if(xVal > 512+deadZone){
+      vel = abs(xVal-512)*0.02+minSpeed;
       setDir(motorLeft,1);
       setDir(motorRight,2);
     }
     //drive forward
-    if(yVal > 512+20){
+    if(yVal > 512+deadZone){
+      vel = abs(yVal-512)*0.02+minSpeed;
       setDir(motorLeft,1);
       setDir(motorRight,1);
     }
     //drive backward
-    if(yVal < 512-20){
+    if(yVal < 512-deadZone){
+      vel = abs(yVal-512)*0.02+minSpeed;
       setDir(motorLeft,2);
       setDir(motorRight,2);
     }
     //Controlling speed (0 = off and 255 = max speed):
     
-    vel = abs(yVal+512)*0.02+65;
+    //vel = abs(yVal-512)*0.02+75;
     analogWrite(motorSpeedPin, vel); //ENA pin
     Serial.println(vel);
     Serial.println(xVal);
     Serial.println(yVal);
-
-    if ((xVal > 512-20 && xVal < 512+20) && (yVal > 512-20 && yVal < 512+20)){
-    isDriving = 0;
-    delay(1000);
-  }
+    readInput();
   }
 
 }
@@ -132,6 +112,26 @@ void setDir(const int pin1, const int pin2, int dir){
   } else if (dir == 2) {
     digitalWrite(pin1, HIGH);
     digitalWrite(pin2, LOW);
+  }
+}
+
+void readInput(){
+  isDriving = 0;
+  xVal = analogRead(joyX);
+  yVal = analogRead(joyY);
+
+  if ((xVal > 512-deadZone && xVal < 512+deadZone) && (yVal > 512-deadZone && yVal < 512+deadZone)){
+    if (isDriving) {
+      isDriving = false;
+      setDir(motorLeft, 0);
+      setDir(motorRight, 0);
+    }
+  } else {
+    
+    if (!isDriving){
+      isDriving = true;
+      Serial.print("here");
+    }
   }
 }
 
