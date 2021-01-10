@@ -7,8 +7,9 @@ int motorRightPin2 = 5;
 int motorLeft[] = {motorLeftPin1, motorLeftPin2};
 int motorRight[] = {motorRightPin1, motorRightPin2};
 
-define joyX A0
-define joyY A1
+#define joyX A0
+#define joyY A1
+int joySw = 7;
 
 int motorSpeedPin = 6;
 
@@ -24,29 +25,52 @@ void setup() {
 
   pinMode(joyX, INPUT);
   pinMode(joyY, INPUT);
+  pinMode(joySw, INPUT);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:   
-
+  int isDriving;
   //read joystick input
-  xVal = analogRead(joyX);
-  yVal = analogRead(joyY);
+  int xVal = analogRead(joyX);
+  int yVal = analogRead(joyY);
+  int vel;
   
-  //Controlling speed (0 = off and 255 = max speed):
-  analogWrite(motorSpeedPin, 100); //ENA pin
+
+  //check if controller is in deadzone
+  if ((xVal > 512-20 && xVal < 512+20) && (yVal > 512-20 && yVal < 512+20)){
+    isDriving = 0;
+  }
+  else{
+    isDriving = 1;
+  }
   
   //Controlling spin direction of motors:
-  while(xVal != 0 || yVal != 0){
-  setDir(motorLeft, 2);
-
-  setDir(motorRight, 2);
-  delay(1000);
-
-  setDir(motorLeft, 1);
-
-  setDir(motorRight, 1);
-  delay(1000);
+  while(isDriving == 1){
+    //steering left
+    if(xVal < 512-20){
+      setDir(motorLeft,2);
+      setDir(motorRight,1);
+    }
+    //steering right
+    if(xVal > 512+20){
+      setDir(motorLeft,1);
+      setDir(motorRight,2);
+    }
+    //drive forward
+    if(yVal > 512+20){
+      setDir(motorLeft,1);
+      setDir(motorRight,1);
+    }
+    //drive backward
+    if(yVal < 512-20){
+      setDir(motorLeft,2);
+      setDir(motorRight,2);
+    }
+    //Controlling speed (0 = off and 255 = max speed):
+    
+    vel = abs(yVal+512)*0.02+65;
+    analogWrite(motorSpeedPin, vel); //ENA pin
   }
 }
 
