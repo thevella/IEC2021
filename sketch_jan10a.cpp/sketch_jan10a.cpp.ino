@@ -26,15 +26,17 @@ void setup() {
   pinMode(joyX, INPUT);
   pinMode(joyY, INPUT);
   pinMode(joySw, INPUT);
+
+  Serial.begin(9600);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:   
   int isDriving;
   //read joystick input
-  int xVal = analogRead(joyX);
-  int yVal = analogRead(joyY);
-  int vel;
+  float xVal = analogRead(joyX);
+  float yVal = analogRead(joyY);
+  float vel;
   
 
   //check if controller is in deadzone
@@ -71,6 +73,14 @@ void loop() {
     
     vel = abs(yVal+512)*0.02+65;
     analogWrite(motorSpeedPin, vel); //ENA pin
+    Serial.println(vel);
+    Serial.println(xVal);
+    Serial.println(yVal);
+
+    if ((xVal > 512-20 && xVal < 512+20) && (yVal > 512-20 && yVal < 512+20)){
+    isDriving = 0;
+    delay(1000);
+  }
   }
 }
 
