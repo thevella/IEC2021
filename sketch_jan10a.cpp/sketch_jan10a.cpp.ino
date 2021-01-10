@@ -6,7 +6,6 @@ int motorRightPin2 = 5;
 
 int motorSpeedPin = 6;
 
-int 
 
 void setup() {
   // put your setup code here, to run once:
@@ -24,22 +23,19 @@ void loop() {
   //Controlling speed (0 = off and 255 = max speed):
   analogWrite(motorSpeedPin, 100); //ENA pin
   //Controlling spin direction of motors:
-  digitalWrite(motorLeftPin1, HIGH);
-  digitalWrite(motorLeftPin2, LOW);
+  setDir(motorLeftPin1, motorLeftPin2, 2);
 
-  digitalWrite(motorRightPin1, HIGH);
-  digitalWrite(motorRightPin2, LOW);
+  setDir(motorRightPin1, motorRightPin2, 2);
   delay(1000);
 
-  digitalWrite(motorLeftPin1, LOW);
-  digitalWrite(motorLeftPin2, HIGH);
+  setDir(motorLeftPin1, motorLeftPin2, 1);
 
-  digitalWrite(motorRightPin1, LOW);
-  digitalWrite(motorRightPin2, HIGH);
+  setDir(motorRightPin1, motorRightPin2, 1);
   delay(1000);
 }
 
 void setDir(int pin1, int pin2, int dir){
+  // 0 = stop, 1 = forward, 2 = backwards
   if (dir == 0){
     digitalWrite(pin1, LOW);
     digitalWrite(pin2, LOW);
