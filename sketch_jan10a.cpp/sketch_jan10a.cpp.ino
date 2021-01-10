@@ -1,13 +1,18 @@
-int motorLeftPin1 = 2;
-int motorLeftPin2 = 3;
+const int motorLeftPin1 = 2;
+const int motorLeftPin2 = 3;
 
-int motorRightPin1 = 4;
-int motorRightPin2 = 5;
+const int motorRightPin1 = 4;
+const int motorRightPin2 = 5;
 
-int motorLeft[] = {motorLeftPin1, motorLeftPin2};
-int motorRight[] = {motorRightPin1, motorRightPin2};
+const int motorLeft[] = {motorLeftPin1, motorLeftPin2};
+const int motorRight[] = {motorRightPin1, motorRightPin2};
 
-int motorSpeedPin = 6;
+const int motorSpeedPin = 6;
+
+const int buttonPins[] = {8,9,10,11};
+
+int buttonStates[] = {0,0,0,0};
+
 
 
 void setup() {
@@ -18,26 +23,40 @@ void setup() {
   pinMode(motorRightPin2, OUTPUT);
 
   pinMode(motorSpeedPin, OUTPUT);
+  for (int i = 0; i < 4; ++i){
+    pinMode(buttonPins[i], INPUT); 
+  }
+
+  Serial.begin(9600);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:   
-
   //Controlling speed (0 = off and 255 = max speed):
-  analogWrite(motorSpeedPin, 100); //ENA pin
+  analogWrite(motorSpeedPin, 75); //ENA pin
+
+  for(int i = 0; i < 4; ++i){
+    buttonStates[i] = digitalRead(buttonPins[i]);
+    if (buttonStates[i] == HIGH) {
+      Serial.print(i);
+    }
+  }
+  
   //Controlling spin direction of motors:
+  /*
   setDir(motorLeft, 2);
 
   setDir(motorRight, 2);
-  delay(1000);
+  delay(10);
 
   setDir(motorLeft, 1);
 
   setDir(motorRight, 1);
   delay(1000);
+  */
 }
 
-void setDir(int pin1, int pin2, int dir){
+void setDir(const int pin1, const int pin2, int dir){
   // 0 = stop, 1 = forward, 2 = backwards
   if (dir == 0){
     digitalWrite(pin1, LOW);
@@ -51,16 +70,6 @@ void setDir(int pin1, int pin2, int dir){
   }
 }
 
-void setDir(int pins[], int dir){
+void setDir(const int pins[], int dir){
   setDir(pins[0], pins[1], dir);
-}
-
-void turn(int deg){
-  // turn deg degrees, negative for left, positive for right
-  
-}
-
-void drive(int deg){
-  // drive deg degrees forward
-  
 }
