@@ -18,7 +18,7 @@ const int buttonPins[] = {8,9,10,11};
 int buttonStates[] = {0,0,0,0};
 
 const int deadZone = 40;
-int minSpeed = 100;
+int minSpeed = 125;
 
 bool isDriving = false;
 
